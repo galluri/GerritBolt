@@ -14,8 +14,13 @@ def say_hello(**payload):
  
   if 'text' in data:
     if 'retrigger' in data['text']:
-      '''
-      print(data['text'])
+      text_str = data['text']
+      tokens = text_str.split(" ")
+      print(tokens[1])
+      cmd = "ssh -p 29418 gowtham.alluri@gerrit.eng.nutanix.com gerrit review -m '\"trigger build\"' " + tokens[1] + ",1"
+      print(cmd)
+      os.system(cmd)
+ 
       channel_id = data['channel']
       thread_ts = data['ts']
       user = data['user']
@@ -25,8 +30,6 @@ def say_hello(**payload):
         text=f"<@{user}>! the build has been retriggered",
         thread_ts=thread_ts
       )
-      '''
-      os.system("ssh -p 29418 gowtham.alluri@gerrit.eng.nutanix.com gerrit review -m '\"trigger build\"' 257561,1")
 
 slack_token = os.environ["SLACK_API_TOKEN"]
 rtm_client = RTMClient(token=slack_token)
