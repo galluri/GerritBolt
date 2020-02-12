@@ -59,7 +59,17 @@ def send_gerrit_message(chan):
     assert response["ok"]
     print(response)
 
+def get_im_list():
+    client = slack.WebClient(token=os.environ['SLACK_API_TOKEN'])
+    response = client.im_list()
+
+    print(response)
+    assert response["ok"]
+
 #send_message("#general")
 #send_gerrit_message("#general")
 
+get_im_list()
+#send_gerrit_message('@raghav.tulshibagwale')
+send_gerrit_message('@gowtham.alluri')
 
