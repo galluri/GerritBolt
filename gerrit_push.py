@@ -75,6 +75,15 @@ def get_im_list():
 #send_gerrit_message("#general")
 
 get_im_list()
+#gowtham
+send_gerrit_message('DTVQV3CP7')
+
+#mayur
+#send_gerrit_message('DTJAGQHB5')
+
+#raghav
+#send_gerrit_message('DTJAGQBC3')
+
 #send_gerrit_message('@raghav.tulshibagwale')
-send_gerrit_message('@gowtham.alluri')
+#send_gerrit_message('@gowtham.alluri')
 
