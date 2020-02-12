@@ -1,6 +1,19 @@
 import os
+import subprocess
+import json
 import slack
 from gerrit_message import GerritMessage
+
+cmd = 'ssh -p 29418 gowtham.alluri@gerrit.eng.nutanix.com gerrit query --comments NOT status:merged NOT status:abandoned owner:gowtham.alluri@nutanix.com --format=JSON'
+
+p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+(output, err) = p.communicate()
+
+output_str = output.decode("utf-8")
+reviews = output_str.split('\n')
+
+review = json.loads(reviews[0])
+print(review)
 
 def send_message(chan):
     client = slack.WebClient(token=os.environ['SLACK_API_TOKEN'])
@@ -46,7 +59,7 @@ def send_gerrit_message(chan):
     assert response["ok"]
     print(response)
 
-send_message("#general")
-send_gerrit_message("#general")
+#send_message("#general")
+#send_gerrit_message("#general")
 
 
