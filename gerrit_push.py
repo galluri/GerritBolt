@@ -12,8 +12,13 @@ p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 output_str = output.decode("utf-8")
 reviews = output_str.split('\n')
 
-review = json.loads(reviews[0])
-print(review)
+crs = []
+for review in reviews:
+    if len(review) > 0:
+        rev_json = json.loads(review)
+        print("Found another CR: \n")
+        print(rev_json)
+        crs.append(rev_json)
 
 def send_message(chan):
     client = slack.WebClient(token=os.environ['SLACK_API_TOKEN'])
@@ -49,7 +54,7 @@ def send_message(chan):
 
 def send_gerrit_message(chan):
     client = slack.WebClient(token=os.environ['SLACK_API_TOKEN'])
-    gm = GerritMessage(chan, None)
+    gm = GerritMessage(chan, crs)
 
     msg = gm.get_message_payload()
     print("Sending following msg to channel %s:", chan)

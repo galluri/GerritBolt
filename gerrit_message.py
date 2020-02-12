@@ -31,7 +31,6 @@ class GerritMessage:
                 self.HEADER_MSG,
                 self.DIVIDER_BLOCK,
                 *self._get_gerrit_msg(),
-                self.DIVIDER_BLOCK,
             ],
         }
 
@@ -50,28 +49,35 @@ class GerritMessage:
         #    },
         #]
         msgs = []
-        for cr in crs:
-            print("Working on CR: %s\n", cr)
+        for cr in self.crs:
+            print("Working on CR: \n", cr)
+
+            if 'type' in cr and cr['type'] == 'stats':
+                continue
 
             text = ""
             if 'number' in cr:
-                text = text + '_Number_: ' + cr['number'] + '\n'
+                text = text + '_Number_: ' + str(cr['number']) + '\n'
 
             if 'subject' in cr:
                 text = text + '_Subject_: ' +  \
-                cr['subject'][0:min(CR_NAME_LEN, len(cr['subject']))] + '\n'
+                cr['subject'][0:min(self.CR_NAME_LEN, len(cr['subject']))] + '\n'
 
             if 'lastUpdated' in cr:
-                text = text + '_LastUpdated_: ' + cr['lastUpdated'] + '\n'
+                text = text + '_LastUpdated_: ' + str(cr['lastUpdated']) + '\n'
 
             if 'comments' in cr:
-               if 'Build' in cr['comments'][-1]:
-                if 'Failed' in cr['comments'][-1]:
-                    text = text + "_Build Status_: Failed"
-                else if 'Successful' in cr['comments'][-1]:
-                    text = text + "_Build Status_: Successful"
-                else if 'Started' in cr['comments'][-1]:
-                    text = txxt + "_Build Status_: Running"
+                print("Last comment ", cr['comments'][-1])
+                if 'message' in cr['comments'][-1]:
+                    msg = cr['comments'][-1]['message']
+                    print("Message in Last comment: ", msg, '\n')
+                    if 'Build' in msg:
+                        if 'Failed' in msg:
+                            text = text + "_Build Status_: Failed"
+                        elif 'Successful' in msg:
+                            text = text + "_Build Status_: Successful"
+                        elif 'Started' in msg:
+                            text = txxt + "_Build Status_: Running"
 
             msg = {
                 "type": "section",
@@ -81,6 +87,6 @@ class GerritMessage:
                 },
             }
             msgs.append(msg)
-            msgs.append(DIVIDER_BLOCK)
+            msgs.append(self.DIVIDER_BLOCK)
 
         return msgs
