@@ -31,6 +31,12 @@ def say_hello(**payload):
         thread_ts=thread_ts
       )
 
+@RTMClient.run_on(event="")
+def retrigger(**payload):
+  data = payload['data']
+  print(data)
+
+
 slack_token = os.environ["SLACK_API_TOKEN"]
 rtm_client = RTMClient(token=slack_token)
 rtm_client.start()

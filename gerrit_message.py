@@ -1,3 +1,6 @@
+import time
+import datetime
+
 class GerritMessage:
     """Constructs gerrit message consisting of list of codereview identifiers
     and associated details"""
@@ -9,8 +12,7 @@ class GerritMessage:
         "text": {
             "type": "mrkdwn",
             "text": (
-                "Hi! How is it going? :smile:\n"
-                "Let me help you with some of your *codereviews*"
+              "*GERRIT BUILD REPORT*"
             ),
         },
     }
@@ -35,37 +37,32 @@ class GerritMessage:
         }
 
     def _get_gerrit_msg(self):
-        #return [
-        #    {
-        #        "type": "section",
-        #        "text": {
-        #            "type": "mrkdwn",
-        #            "text": (
-        #                "[Replication]: Adding Minio support for replication APIs...\n"
-        #                "ENG-274249\n"
-        #                "Build status: failed :white_frowning_face:\n"
-        #            ),
-        #        },
-        #    },
-        #]
         msgs = []
+
         for cr in self.crs:
-            print("Working on CR: \n", cr)
+            #print("Working on CR: \n", cr)
+
 
             if 'type' in cr and cr['type'] == 'stats':
                 continue
 
-            text = ""
+            status = "*BUILD STATUS* \n"
             if 'number' in cr:
-                text = text + '_Number_: ' + str(cr['number']) + '\n'
+                reviewid = '*REVIEW ID*: \n' + str(cr['number'])
+
+            if 'url' in cr:
+                url = '*URL*: \n' + str(cr['url'])
 
             if 'subject' in cr:
-                text = text + '_Subject_: ' +  \
-                cr['subject'][0:min(self.CR_NAME_LEN, len(cr['subject']))] + '\n'
+                subject = '*SUBJECT*: \n' +  \
+                cr['subject'][0:min(self.CR_NAME_LEN, len(cr['subject']))]
 
             if 'lastUpdated' in cr:
-                text = text + '_LastUpdated_: ' + str(cr['lastUpdated']) + '\n'
+                last_t = cr['lastUpdated']
+                last_time = datetime.datetime.fromtimestamp(last_t)
+                lastupdated = '*LAST UPDATED*: \n' + str(last_time)
 
+            build_failed = False
             if 'comments' in cr:
                 print("Last comment ", cr['comments'][-1])
                 if 'message' in cr['comments'][-1]:
@@ -73,20 +70,55 @@ class GerritMessage:
                     print("Message in Last comment: ", msg, '\n')
                     if 'Build' in msg:
                         if 'Failed' in msg:
-                            text = text + "_Build Status_: Failed"
+                            build_failed = True
+                            status = status + "FAILED"
                         elif 'Successful' in msg:
-                            text = text + "_Build Status_: Successful"
+                            status = status + "SUCCESSFUL"
                         elif 'Started' in msg:
-                            text = txxt + "_Build Status_: Running"
+                            status = status + "RUNNING"
 
             msg = {
                 "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": text,
-                },
+                "fields": [
+				{
+					"type": "mrkdwn",
+					"text": reviewid
+				},
+				{
+					"type": "mrkdwn",
+					"text": url
+				},
+				{
+					"type": "mrkdwn",
+					"text": subject
+				},
+				{
+					"type": "mrkdwn",
+					"text": lastupdated
+				},
+				{
+					"type": "mrkdwn",
+					"text": status
+				},
+                ]
+            }
+            button_msg = {
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "Retrigger Build"
+					},
+					"style": "danger",
+					"value": "click_me_123"
+				},
+			]
             }
             msgs.append(msg)
+            if build_failed:
+              msgs.append(button_msg)
             msgs.append(self.DIVIDER_BLOCK)
 
         return msgs

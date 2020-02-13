@@ -32,26 +32,6 @@ def send_message(chan):
     print(response)
 
 
-#@slack.RTMClient.run_on(event='message')
-#def say_hello(**payload):
-#    data = payload['data']
-#    web_client = payload['web_client']
-#    rtm_client = payload['rtm_client']
-#    if 'Hello' in data.get('text', []):
-#        channel_id = data['channel']
-#        thread_ts = data['ts']
-#        user = data['user']
-#
-#        web_client.chat_postMessage(
-#            channel=channel_id,
-#            text=f"Hi <@{user}>!",
-#            thread_ts=thread_ts
-#        )
-#
-#slack_token = os.environ["SLACK_API_TOKEN"]
-#rtm_client = slack.RTMClient(token=slack_token)
-#rtm_client.start()
-
 def send_gerrit_message(chan):
     client = slack.WebClient(token=os.environ['SLACK_API_TOKEN'])
     gm = GerritMessage(chan, crs)
@@ -86,4 +66,7 @@ send_gerrit_message('DTVQV3CP7')
 
 #send_gerrit_message('@raghav.tulshibagwale')
 #send_gerrit_message('@gowtham.alluri')
+
+
+
 
